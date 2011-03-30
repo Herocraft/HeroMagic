@@ -83,7 +83,7 @@ public class HeroMagicPlayerListener extends PlayerListener
  					{
  						sender.sendMessage("Spell Is On Cooldown");
  					} else if (!removeRegents((Player) sender,getSpellCost("Gate"))) {
- 		    			sender.sendMessage("No Regents");
+ 		    			sender.sendMessage("You Do Not Have The Regeants To Cast Gate");
  		    			return false;
  		    		} else {
  		    			Location loc = ((Player) sender).getWorld().getSpawnLocation();
@@ -108,7 +108,7 @@ public class HeroMagicPlayerListener extends PlayerListener
     			player.sendMessage("Spell Is On Cooldown");
     			return false;
     		} else if (!removeRegents(player,getSpellCost("Recall"))) {
-    			player.sendMessage("No Regents");
+    			player.sendMessage("You Do Not Have The Regeants To Cast Recall");
     			return false;
     		} else {
     			Location loc = getPlayerMark(player);
@@ -125,7 +125,7 @@ public class HeroMagicPlayerListener extends PlayerListener
     private boolean castCost(CommandSender sender, Command command,
 			String[] args) {
     	Player player = (Player) sender;
-    	player.chat("You have checked a spell cost :D");
+    //	player.chat("You have checked a spell cost :D");
     	
     	if(canCastSpell(player,"Cost") && args.length >= 2)
     	{
@@ -148,18 +148,18 @@ public class HeroMagicPlayerListener extends PlayerListener
     	event.getAction();
 		if (event.getAction().equals(Action.LEFT_CLICK_AIR))
     	{
-    		event.getPlayer().sendMessage("Left Clicked in Air :D");
+    		//event.getPlayer().sendMessage("Left Clicked in Air :D");
     	}
 		if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
 		{
-			event.getPlayer().sendMessage("Right Clicked Block :D");
+			//event.getPlayer().sendMessage("Right Clicked Block :D");
 			if(event.getClickedBlock().getTypeId() == 47)
 			{
-				event.getPlayer().sendMessage("Clicked ona book shelf");
+				//event.getPlayer().sendMessage("Clicked ona book shelf");
 				String spellname = getSpellLocations().get(event.getClickedBlock().getLocation());
 				if(spellname != null)
 				{
-					event.getPlayer().sendMessage("SPELL LEARNEDZOMG");
+					event.getPlayer().sendMessage("This is the " + spellname + " Location");
 					addSpell(event.getPlayer(),spellname);
 				}
 			}
@@ -195,8 +195,8 @@ public class HeroMagicPlayerListener extends PlayerListener
     		if (target == null) {
     			player.sendMessage("Too Far To Blink");
     			return false;
-    		} else if (80 > 0 && getDistance(player,target) > 80) {
-    			player.sendMessage("Too Far To Blink b");
+    		} else if (80 > 0 && getDistance(player,target) > 20) {
+    			player.sendMessage("Too Far To Blink");
     			return false;
     		} else if (60 > 0 && isOnCooldown(player,"Blink",60)) {
     			player.sendMessage("Spell Is On Cooldown");
@@ -204,7 +204,7 @@ public class HeroMagicPlayerListener extends PlayerListener
     		}  else if (player.getWorld().getBlockTypeIdAt(target.getX(),target.getY()+1,target.getZ()) == 0 && player.getWorld().getBlockTypeIdAt(target.getX(),target.getY()+2,target.getZ()) == 0) {
     			// teleport to top of target block if possible
     			if (!removeRegents(player,getSpellCost("Blink"))) {
-        			player.sendMessage("No Regents");
+        			player.sendMessage("You Do Not Have The Regeants To Cast Blink!");
         			return false;
         		}
     			player.sendMessage("You Cast Blink!");
@@ -217,7 +217,7 @@ public class HeroMagicPlayerListener extends PlayerListener
     		} else if (target.getTypeId() == 0 && player.getWorld().getBlockTypeIdAt(face.getModX(),face.getModY()+1,face.getModZ()) == 0) {
     			// otherwise teleport to face of target block
     			if (!removeRegents(player,getSpellCost("Blink"))) {
-        			player.sendMessage("No Regents");
+        			player.sendMessage("You Do Not Have The Regeants To Cast Blink!");
         			return false;
         		}
     			player.sendMessage("You cast blink");
@@ -229,7 +229,7 @@ public class HeroMagicPlayerListener extends PlayerListener
     			return true;
     		} else {
     			// no place to stand
-    			player.sendMessage("No place to stand :/");
+    			player.sendMessage("There Is No Place To Stand At That Location!");
     			return false;
     		}
 	
