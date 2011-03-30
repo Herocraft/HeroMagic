@@ -184,7 +184,7 @@ public class HeroMagicPlayerListener extends PlayerListener
 	public boolean castBlink(CommandSender sender,Command command,String[] args)
     {
     	Player player = (Player) sender;
-    	player.chat("You have blinked :D");
+    	//player.chat("You have blinked :D");
     	
     	if(canCastSpell(player,"Blink"))
     	{
@@ -195,7 +195,7 @@ public class HeroMagicPlayerListener extends PlayerListener
     		if (target == null) {
     			player.sendMessage("Too Far To Blink");
     			return false;
-    		} else if (80 > 0 && getDistance(player,target) > 20) {
+    		} else if (getDistance(player,target) > 20) {
     			player.sendMessage("Too Far To Blink");
     			return false;
     		} else if (60 > 0 && isOnCooldown(player,"Blink",60)) {
