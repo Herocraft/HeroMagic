@@ -1,6 +1,6 @@
 name: HeroMagic
-main: com.bukkit.Dgco.HeroMagic.HeroMagic
-version: 0.0.0.2
+main: com.HeroCraft.Dgco.HeroMagic.HeroMagic
+version: 0.0.1.0
 author: Dgco
 description: Casts Stuff
 commands:
