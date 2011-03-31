@@ -1,4 +1,4 @@
-package com.bukkit.Dgco.HeroMagic;
+package com.HeroCraft.Dgco.HeroMagic;
 
 import java.io.*;
 import java.util.HashMap;
@@ -50,15 +50,19 @@ public class HeroMagicPlayerListener extends PlayerListener
  	   
  		if (command.getName().toString().equalsIgnoreCase("cast")) 
  		{
+ 			if (args.length <= 0) {
+ 				// Previous behaviour, not sure if intended.
+ 				return true;
+			}
  			
- 			if(args.length >0 && args[0].equalsIgnoreCase("blink"))
+ 			if(args[0].equalsIgnoreCase("blink"))
  			{
  				if(castBlink(sender,command,args))
  				{
  					//spell worked if here
  				}
  			}
- 			if(args.length >0 && args[0].equalsIgnoreCase("cost"))
+ 			if(args[0].equalsIgnoreCase("cost"))
  			{
  				if(castCost(sender,command,args))
  				{
@@ -66,16 +70,16 @@ public class HeroMagicPlayerListener extends PlayerListener
  				}
  			}
  			
- 			if(args.length >0 && args[0].equalsIgnoreCase("mark"))
+ 			if(args[0].equalsIgnoreCase("mark"))
  			{
  				setPlayerMark( ((Player) sender), ((Player) sender).getLocation());
  			}
  			
- 			if(args.length >0 && args[0].equalsIgnoreCase("recall"))
+ 			if(args[0].equalsIgnoreCase("recall"))
  			{
  				return castRecall((Player) sender);
  			}
- 			if(args.length >0 && args[0].equalsIgnoreCase("gate"))
+ 			if(args[0].equalsIgnoreCase("gate"))
  			{
  				if(canCastSpell((Player) sender,"Gate"))
  				{
@@ -377,115 +381,17 @@ public class HeroMagicPlayerListener extends PlayerListener
     	Property recall = new Property("Recall", plugin);
     	Property gate = new Property("Gate", plugin);
     	
-    	Location blinkloc = new Location(plugin.getServer().getWorld("world"), 0, 0, 0);
-    	double x,y,z;
-    	x = blink.getDouble("Blink-X-Loc");
-    	if(x == 0.0D)
-    	{
-    		blink.setDouble("Blink-X-Loc", 0.0);
-    	}
-    	blinkloc.setX(x);
-    	
-    	y = blink.getDouble("Blink-Y-Loc");
-    	if(y == 0.0D)
-    	{
-    		blink.setDouble("Blink-Y-Loc", 0.0);
-    	}
-    	blinkloc.setY(y);
-    	
-    	z = blink.getDouble("Blink-Z-Loc");
-    	if(z == 0.0D)
-    	{
-    		blink.setDouble("Blink-Z-Loc", 0.0);
-    	}
-    	blinkloc.setZ(z);
-    	
-    	blink.save();
-    	
-    	Location markloc = new Location(plugin.getServer().getWorld("world"), 0, 0, 0);
-       	x = mark.getDouble("mark-X-Loc");
-       	if(x == 0.0D)
-       	{
-       		mark.setDouble("mark-X-Loc", 0.0);
-       	}
-       	markloc.setX(x);
-       	
-       	y = mark.getDouble("mark-Y-Loc");
-       	if(y == 0.0D)
-       	{
-       		mark.setDouble("mark-Y-Loc", 0.0);
-       	}
-       	markloc.setY(y);
-       	
-       	z = mark.getDouble("mark-Z-Loc");
-       	if(z == 0.0D)
-       	{
-       		mark.setDouble("mark-Z-Loc", 0.0);
-       	}
-       	markloc.setZ(z);
-       	
-       	mark.save();
-    	
-    	
-       	Location recallloc = new Location(plugin.getServer().getWorld("world"), 0, 0, 0);
-       	x = recall.getDouble("recall-X-Loc");
-       	if(x == 0.0D)
-       	{
-       		recall.setDouble("recall-X-Loc", 0.0);
-       	}
-       	recallloc.setX(x);
-       	
-       	y = recall.getDouble("recall-Y-Loc");
-       	if(y == 0.0D)
-       	{
-       		recall.setDouble("recall-Y-Loc", 0.0);
-       	}
-       	recallloc.setY(y);
-       	
-       	z = recall.getDouble("recall-Z-Loc");
-       	if(z == 0.0D)
-       	{
-       		recall.setDouble("recall-Z-Loc", 0.0);
-       	}
-       	recallloc.setZ(z);
-       	
-       	recall.save();
-    	
-       	
-       	
-        Location gateloc = new Location(plugin.getServer().getWorld("world"), 0, 0, 0);
-       	x = gate.getDouble("gate-X-Loc");
-       	if(x == 0.0D)
-       	{
-       		gate.setDouble("gate-X-Loc", 0.0);
-       	}
-       	gateloc.setX(x);
-       	
-       	y = gate.getDouble("gate-Y-Loc");
-       	if(y == 0.0D)
-       	{
-       		gate.setDouble("gate-Y-Loc", 0.0);
-       	}
-       	gateloc.setY(y);
-       	
-       	z = gate.getDouble("gate-Z-Loc");
-       	if(z == 0.0D)
-       	{
-       		gate.setDouble("gate-Z-Loc", 0.0);
-       	}
-       	gateloc.setZ(z);
-       	
-       	gate.save();
-    	
-    	
-    	
+    	Location blinkloc = getSingleSpellLocation(blink, "Blink-X-Loc", "Blink-Y-Loc", "Blink-Z-Loc");
+    	Location markloc = getSingleSpellLocation(mark, "mark-X-Loc", "mark-Y-Loc", "mark-Z-Loc");
+    	Location recallloc = getSingleSpellLocation(recall, "recall-X-Loc", "recall-Y-Loc", "recall-Z-Loc");	
+        Location gateloc = getSingleSpellLocation(gate, "gate-X-Loc", "gate-Y-Loc", "gate-Z-Loc");
+        
     	map.put(blinkloc, "Blink");
     	map.put(markloc, "Mark");
     	map.put(recallloc, "Recall");
     	map.put(gateloc, "Gate");
+    	
     	return map;
-    	
-    	
     }
     public void setPlayerMark(Player player,Location loc)
     {
@@ -516,6 +422,32 @@ public class HeroMagicPlayerListener extends PlayerListener
 		Location player = pl.getLocation();
 		Location target = tg.getLocation();
 		return Math.sqrt(Math.pow(player.getX()-target.getX(),2) + Math.pow(player.getY()-target.getY(),2) + Math.pow(player.getZ()-target.getZ(),2));
+	}
+	
+	private Location getSingleSpellLocation(Property prop, String xName, String yName, String zName) {
+    	
+    	double x,y,z;
+    	x = prop.getDouble(xName);
+    	if(x == 0.0D)
+    	{
+    		prop.setDouble(xName, 0.0);
+    	}
+    	
+    	y = prop.getDouble(yName);
+    	if(y == 0.0D)
+    	{
+    		prop.setDouble(yName, 0.0);
+    	}
+    	
+    	z = prop.getDouble(zName);
+    	if(z == 0.0D)
+    	{
+    		prop.setDouble(zName, 0.0);
+    	}
+    	
+    	prop.save();
+    	
+    	return new Location(plugin.getServer().getWorld("world"), x, y, z);
 	}
 
 }
