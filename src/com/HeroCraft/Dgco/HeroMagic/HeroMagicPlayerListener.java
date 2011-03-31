@@ -324,19 +324,19 @@ public class HeroMagicPlayerListener extends PlayerListener
     	Property sfile = new Property(spellname,plugin);
     	if((spellcost[0] = sfile.getInt("Regeant-1")) == 0)
     	{
-    		sfile.setInt("Rgeant-1", 331);
+    		sfile.setInt("Regeant-1", 331);
     	}
     	if((spellcost[1] = sfile.getInt("Regeant-1-amt")) == 0)
     	{
-    		sfile.setInt("Rgeant-1-amt", 5);
+    		sfile.setInt("Regeant-1-amt", 5);
     	}
     	if((spellcost[2] = sfile.getInt("Regeant-2")) == 0)
     	{
-    		sfile.setInt("Rgeant-2", 0);
+    		sfile.setInt("Regeant-2", 0);
     	}
     	if((spellcost[3] = sfile.getInt("Regeant-2-amt")) == 0)
     	{
-    		sfile.setInt("Rgeant-2-amt", 0);
+    		sfile.setInt("Regeant-2-amt", 0);
     	}
     	sfile.save();
     	return spellcost;
