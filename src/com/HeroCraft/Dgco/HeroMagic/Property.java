@@ -25,11 +25,13 @@ public final class Property {
 		this.plugin = plugin;
 		this.pName = plugin.pName;
 	//	this.log = plugin.log;
-		if (!(new File(plugin.getDataFolder().getAbsolutePath() + "/HeroSpellsData").exists()))
-		{
-			new File(plugin.getDataFolder().getAbsolutePath() + "/HeroSpellsData").mkdir();
-		}
-		this.filename = "HeroSpellsData/"+filename;
+	//	if (!(new File(plugin.getDataFolder().getAbsolutePath() + "/HeroSpellsData").exists()))
+	//	{
+	//		new File(plugin.getDataFolder().getAbsolutePath() + "/HeroSpellsData").mkdir();
+	//	}
+		this.filename = filename;
+			//"HeroSpellsData/"
+			
 		File file = new File(filename);
 
 		if (file.exists()) {
