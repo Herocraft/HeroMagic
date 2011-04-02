@@ -25,14 +25,21 @@ public final class Property {
 		this.plugin = plugin;
 		this.pName = plugin.pName;
 	//	this.log = plugin.log;
-	//	if (!(new File(plugin.getDataFolder().getAbsolutePath() + "/HeroSpellsData").exists()))
-	//	{
-	//		new File(plugin.getDataFolder().getAbsolutePath() + "/HeroSpellsData").mkdir();
-	//	}
-		this.filename = filename;
+		
+		//System.out.println(plugin.getDataFolder() + "\\HeroMagicData");
+		if (!(new File(plugin.getDataFolder() + "\\HeroMagicData").exists()))
+		{
+			System.out.println("Dir does not exist, making Dir");
+			File dir = new File(plugin.getDataFolder() + "\\HeroMagicData");
+			dir.mkdirs();
+		}
+		
+		this.filename = plugin.getDataFolder() + "\\HeroMagicData\\" + filename;
 			//"HeroSpellsData/"
+		
+		//System.out.println(this.filename);
 			
-		File file = new File(filename);
+		File file = new File(this.filename);
 
 		if (file.exists()) {
 			load();

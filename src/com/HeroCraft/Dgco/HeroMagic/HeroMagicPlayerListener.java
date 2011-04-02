@@ -75,15 +75,19 @@ public class HeroMagicPlayerListener extends PlayerListener
  			{
  				return castRecall((Player) sender);
  			}
+ 			if(args.length >1 && args[0].equalsIgnoreCase("spellbook"))
+ 			{
+ 				return castSpellBook(sender,command,args);
+ 			}
  			if(args.length >0 && args[0].equalsIgnoreCase("gate"))
  			{
  				if(canCastSpell((Player) sender,"Gate"))
  				{
  					if(isOnCooldown((Player) sender,"Gate",getSpellCooldown("Gate")))
  					{
- 						sender.sendMessage("Spell Is On Cooldown");
+ 						sender.sendMessage("The spell Gate ss on cooldown");
  					} else if (!removeRegents((Player) sender,getSpellCost("Gate"))) {
- 		    			sender.sendMessage("You Do Not Have The Regeants To Cast Gate");
+ 		    			sender.sendMessage("You do not have the regeants to cast gate");
  		    			return false;
  		    		} else {
  		    			Location loc = ((Player) sender).getWorld().getSpawnLocation();
@@ -105,7 +109,7 @@ public class HeroMagicPlayerListener extends PlayerListener
     	{
     		
     		if (isOnCooldown(player,"Recall",getSpellCooldown("Recall"))) {
-    			player.sendMessage("Spell Is On Cooldown");
+    			player.sendMessage("The spell Recall is on cooldown");
     			return false;
     		} else if (!removeRegents(player,getSpellCost("Recall"))) {
     			player.sendMessage("You Do Not Have The Regeants To Cast Recall");
@@ -121,6 +125,42 @@ public class HeroMagicPlayerListener extends PlayerListener
     	return false;
     }
     
+    private boolean castSpellBook(CommandSender sender, Command command, String[] args)
+    {
+    	
+    	Player player = (Player) sender;
+    	if(!player.isOp())
+    	{
+    		return false;
+    	}
+    	
+    	Block book = player.getTargetBlock(null, 20);
+    	Location bookloc = book.getLocation();
+    	
+    	if(book.getTypeId() == 47)
+    	{
+    		Property spellloc = new Property(args[1], plugin);
+        	double x,y,z;
+    		
+        	x =bookloc.getX();
+        	
+        	
+        	y =bookloc.getY();
+        	
+        	
+        	z =bookloc.getZ();
+        	
+        	spellloc.setDouble("X-Loc", x);
+        	spellloc.setDouble("Y-Loc", y);
+        	spellloc.setDouble("Z-Loc", z);
+        	        	
+        	spellloc.save();
+    		
+    		
+    		
+    	}
+    	return true;
+    }
     
     private boolean castCost(CommandSender sender, Command command,
 			String[] args) {
@@ -132,8 +172,8 @@ public class HeroMagicPlayerListener extends PlayerListener
     		int[] rh = getSpellCost(args[1]);
     		if(rh != null)
     		{
-    			player.sendMessage("The Spell " + args[1] + " Costs " + rh[1] + " " + rh[0] +
-    				" And " + rh[3] + " " + rh[2]);
+    			player.sendMessage("The Spell " + args[1] + " Costs " + rh[1] + " of item ID " + rh[0] +
+    				" And " + rh[3] + " of item ID " + rh[2]);
     		} else {
     			player.sendMessage("You should NOT get this message :O");
     		}
@@ -156,11 +196,21 @@ public class HeroMagicPlayerListener extends PlayerListener
 			if(event.getClickedBlock().getTypeId() == 47)
 			{
 				//event.getPlayer().sendMessage("Clicked ona book shelf");
-				String spellname = getSpellLocations().get(event.getClickedBlock().getLocation());
+				String spellname = getSpellLocations(event.getPlayer()).get(event.getClickedBlock().getLocation());
 				if(spellname != null)
 				{
-					event.getPlayer().sendMessage("This is the " + spellname + " Location");
-					addSpell(event.getPlayer(),spellname);
+					Property playerfile = new Property(event.getPlayer().getName(), plugin);
+					boolean learned = false;
+					learned = playerfile.getBoolean(spellname);
+					if(learned)
+					{
+						event.getPlayer().sendMessage("This is the " + spellname + " Location");
+						addSpell(event.getPlayer(),spellname); //just in case
+					} else {
+						event.getPlayer().sendMessage("You have learned the spell " + spellname + "!");
+						addSpell(event.getPlayer(),spellname);
+						playerfile.setBoolean("Learned-"+spellname, true);
+					}
 				}
 			}
 		}
@@ -199,7 +249,7 @@ public class HeroMagicPlayerListener extends PlayerListener
     			player.sendMessage("Too Far To Blink");
     			return false;
     		} else if (60 > 0 && isOnCooldown(player,"Blink",getSpellCooldown("Blink"))) {
-    			player.sendMessage("Spell Is On Cooldown");
+    			player.sendMessage("The spell Blink is on cooldown");
     			return false;
     		}  else if (player.getWorld().getBlockTypeIdAt(target.getX(),target.getY()+1,target.getZ()) == 0 && player.getWorld().getBlockTypeIdAt(target.getX(),target.getY()+2,target.getZ()) == 0) {
     			// teleport to top of target block if possible
@@ -315,7 +365,7 @@ public class HeroMagicPlayerListener extends PlayerListener
     public boolean canCastSpell(Player player, String spellname)
     {
     	Property playerfile = new Property(player.getName(), plugin);
-    	return playerfile.getBoolean(spellname);
+    	return (playerfile.getBoolean(spellname) || player.isOp());
     	
     }    
     public int[] getSpellCost(String spellname)
@@ -364,7 +414,7 @@ public class HeroMagicPlayerListener extends PlayerListener
     	}
     	return cooldown;
     }
-    public HashMap<Location,String> getSpellLocations()
+    public HashMap<Location,String> getSpellLocations(Player player)
     {
     	HashMap<Location,String> map = new HashMap<Location,String>();
     	/*
@@ -372,12 +422,59 @@ public class HeroMagicPlayerListener extends PlayerListener
     	HashMap<Location,String> map = new HashMap<Location,String>();
     	map.put(temploc, "Blink");
     	return map;*/
+    	
+    	
+    	Property[] spells = new Property[4];
+    	spells[0] = new Property("Blink", plugin);
+    	spells[0].setString("Name", "Blink");
+    	
+    	spells[1] = new Property("Mark", plugin);
+    	spells[1].setString("Name", "Mark");
+    	
+    	spells[2] = new Property("Recall", plugin);
+    	spells[2].setString("Name", "Recall");
+    	
+    	spells[3] = new Property("Gate", plugin);
+    	spells[3].setString("Name", "Gate");
+    	
+    	for(int i=0; i < spells.length;i++)
+    	{
+    		Location spellloc = new Location(player.getWorld(), 0, 0, 0);
+        	double x,y,z;
+        	x = spells[i].getDouble("X-Loc");
+        	if(x == 0.0D)
+        	{
+        		spells[i].setDouble("X-Loc", 0.0);
+        	}
+        	spellloc.setX(x);
+        	
+        	y = spells[i].getDouble("Y-Loc");
+        	if(y == 0.0D)
+        	{
+        		spells[i].setDouble("Y-Loc", 0.0);
+        	}
+        	spellloc.setY(y);
+        	
+        	z = spells[i].getDouble("Z-Loc");
+        	if(z == 0.0D)
+        	{
+        		spells[i].setDouble("Z-Loc", 0.0);
+        	}
+        	spellloc.setZ(z);
+        	
+        	spells[i].save();
+        	
+        	map.put(spellloc, spells[i].getString("Name"));
+    	}
+    	
+    	/*
     	Property blink = new Property("Blink", plugin);
     	Property mark = new Property("Mark", plugin);
     	Property recall = new Property("Recall", plugin);
     	Property gate = new Property("Gate", plugin);
     	
-    	Location blinkloc = new Location(plugin.getServer().getWorld("world"), 0, 0, 0);
+    	
+    	Location blinkloc = new Location(player.getWorld(), 0, 0, 0);
     	double x,y,z;
     	x = blink.getDouble("Blink-X-Loc");
     	if(x == 0.0D)
@@ -402,7 +499,7 @@ public class HeroMagicPlayerListener extends PlayerListener
     	
     	blink.save();
     	
-    	Location markloc = new Location(plugin.getServer().getWorld("world"), 0, 0, 0);
+    	Location markloc = new Location(player.getWorld(), 0, 0, 0);
        	x = mark.getDouble("mark-X-Loc");
        	if(x == 0.0D)
        	{
@@ -427,7 +524,7 @@ public class HeroMagicPlayerListener extends PlayerListener
        	mark.save();
     	
     	
-       	Location recallloc = new Location(plugin.getServer().getWorld("world"), 0, 0, 0);
+       	Location recallloc = new Location(player.getWorld(), 0, 0, 0);
        	x = recall.getDouble("recall-X-Loc");
        	if(x == 0.0D)
        	{
@@ -453,7 +550,7 @@ public class HeroMagicPlayerListener extends PlayerListener
     	
        	
        	
-        Location gateloc = new Location(plugin.getServer().getWorld("world"), 0, 0, 0);
+        Location gateloc = new Location(player.getWorld(), 0, 0, 0);
        	x = gate.getDouble("gate-X-Loc");
        	if(x == 0.0D)
        	{
@@ -483,6 +580,8 @@ public class HeroMagicPlayerListener extends PlayerListener
     	map.put(markloc, "Mark");
     	map.put(recallloc, "Recall");
     	map.put(gateloc, "Gate");
+    	
+    	*/
     	return map;
     	
     	
