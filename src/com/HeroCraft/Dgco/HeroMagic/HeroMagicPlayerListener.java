@@ -55,7 +55,7 @@ public class HeroMagicPlayerListener extends PlayerListener
  			{
  				if(castBlink(sender,command,args))
  				{
- 					//spell worked if here
+ 					return true;
  				}
  			}
  			if(args.length >0 && args[0].equalsIgnoreCase("cost"))
@@ -63,6 +63,7 @@ public class HeroMagicPlayerListener extends PlayerListener
  				if(castCost(sender,command,args))
  				{
  					//spell worked if here :D
+ 					return true;
  				}
  			}
  			
@@ -98,6 +99,8 @@ public class HeroMagicPlayerListener extends PlayerListener
  		    		}
  				}
  			}
+ 			
+ 			((Player) sender).sendMessage("Your magical words have no effect. Perhaps you need to pronounce them better...");
  			return true;
  		}
  		return false;
@@ -116,6 +119,11 @@ public class HeroMagicPlayerListener extends PlayerListener
     			return false;
     		} else {
     			Location loc = getPlayerMark(player);
+    			if (loc.getX() == 0.0 && loc.getY() == 0.0 && loc.getZ() == 0.0)
+    			{
+    				player.sendMessage("You must first mark a location before you can Recall!");
+    				return false;
+    			}
     			player.teleport(loc);
     			startCooldown(player,"Recall",getSpellCooldown("Recall"));
     			
