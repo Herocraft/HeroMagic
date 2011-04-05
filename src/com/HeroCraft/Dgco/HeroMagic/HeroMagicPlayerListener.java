@@ -316,6 +316,7 @@ public class HeroMagicPlayerListener extends PlayerListener
     		} else {
     			// no place to stand
     			player.sendMessage(ChatColor.LIGHT_PURPLE + "There Is No Place To Stand At That Location!");
+    			
     			return false;
     		}
 	
