@@ -1,6 +1,7 @@
 package com.bukkit.Dgco.HeroMagic;
 
-import java.io.*;
+//import java.awt.Color;
+//import java.io.*;
 import java.util.HashMap;
 
 import org.bukkit.Location;
@@ -9,17 +10,17 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockEvent;
+//import org.bukkit.event.block.BlockEvent;
 //import org.bukkit.event.block.BlockRightClickEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
-import org.bukkit.event.player.PlayerChatEvent;
-import org.bukkit.event.player.PlayerEvent;
+//import org.bukkit.event.player.PlayerChatEvent;
+//import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerListener;
-import org.bukkit.event.player.PlayerMoveEvent;
+//import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.*;
-import org.bukkit.material.MaterialData;
+//import org.bukkit.material.MaterialData;
 import org.bukkit.*;
 
 
@@ -34,13 +35,16 @@ public class HeroMagicPlayerListener extends PlayerListener
 {
     private final HeroMagic plugin;
     protected HashMap<String,Long> lastcast;
+    
+    
 
-    public HeroMagicPlayerListener(HeroMagic instance) 
+     public HeroMagicPlayerListener(HeroMagic instance) 
     {
         plugin = instance;
         lastcast = new HashMap<String,Long>();
     }
     
+     
     public boolean onPlayerCommand(CommandSender  sender,  
   		  Command  command,  
 		  String  label,  
@@ -70,6 +74,8 @@ public class HeroMagicPlayerListener extends PlayerListener
  			if(args.length >0 && args[0].equalsIgnoreCase("mark"))
  			{
  				setPlayerMark( ((Player) sender), ((Player) sender).getLocation());
+ 				sender.sendMessage(ChatColor.BLUE + "You have marked a location for further use...");
+ 				return true;
  			}
  			
  			if(args.length >0 && args[0].equalsIgnoreCase("recall"))
@@ -86,11 +92,12 @@ public class HeroMagicPlayerListener extends PlayerListener
  				{
  					if(isOnCooldown((Player) sender,"Gate",getSpellCooldown("Gate")))
  					{
- 						sender.sendMessage("The spell Gate ss on cooldown");
+ 						sender.sendMessage(ChatColor.LIGHT_PURPLE + "The spell Gate ss on cooldown");
  					} else if (!removeRegents((Player) sender,getSpellCost("Gate"))) {
- 		    			sender.sendMessage("You do not have the regeants to cast gate");
+ 		    			sender.sendMessage(ChatColor.RED +"You do not have the regeants to cast gate");
  		    			return false;
  		    		} else {
+ 		    			sender.sendMessage(ChatColor.BLUE + "You focus your magic to return yourself to the Origin...");
  		    			Location loc = ((Player) sender).getWorld().getSpawnLocation();
  		    			((Player) sender).teleport(loc);
  		    			startCooldown((Player) sender,"Gate",getSpellCooldown("Gate"));
@@ -100,30 +107,36 @@ public class HeroMagicPlayerListener extends PlayerListener
  				}
  			}
  			
- 			((Player) sender).sendMessage("Your magical words have no effect. Perhaps you need to pronounce them better...");
+ 			((Player) sender).sendMessage(ChatColor.LIGHT_PURPLE + "Your magical words have no effect. Perhaps you need to pronounce them better...");
  			return true;
  		}
  		return false;
     }
  	
+    
+    
+    
+    
+    
     public boolean castRecall(Player player)
     {
     	if(canCastSpell(player,"Recall"))
     	{
     		
     		if (isOnCooldown(player,"Recall",getSpellCooldown("Recall"))) {
-    			player.sendMessage("The spell Recall is on cooldown");
+    			player.sendMessage(ChatColor.LIGHT_PURPLE +"The spell Recall is on cooldown");
     			return false;
     		} else if (!removeRegents(player,getSpellCost("Recall"))) {
-    			player.sendMessage("You Do Not Have The Regeants To Cast Recall");
+    			player.sendMessage(ChatColor.RED +"You Do Not Have The Regeants To Cast Recall");
     			return false;
     		} else {
     			Location loc = getPlayerMark(player);
     			if (loc.getX() == 0.0 && loc.getY() == 0.0 && loc.getZ() == 0.0)
     			{
-    				player.sendMessage("You must first mark a location before you can Recall!");
+    				player.sendMessage(ChatColor.RED +"You must first mark a location before you can Recall!");
     				return false;
     			}
+    			player.sendMessage(ChatColor.BLUE + "You tear a hole in the fabric of space and time...");
     			player.teleport(loc);
     			startCooldown(player,"Recall",getSpellCooldown("Recall"));
     			
@@ -139,6 +152,7 @@ public class HeroMagicPlayerListener extends PlayerListener
     	Player player = (Player) sender;
     	if(!player.isOp())
     	{
+    		
     		return false;
     	}
     	
@@ -177,13 +191,27 @@ public class HeroMagicPlayerListener extends PlayerListener
     	
     	if(/*canCastSpell(player,"Cost") &&*/ args.length >= 2)
     	{
+    		Property spellfile = new Property(args[1],plugin);
+    		
+    		if(!spellfile.keyExists("Regeant-1-Name"))
+    		{
+    			spellfile.setString("Regeant-1-Name", "Redstone Dust");
+    		}
+    		if(!spellfile.keyExists("Regeant-2-Name"))
+    		{
+    			spellfile.setString("Regeant-2-Name", "");
+    		}
+    		
     		int[] rh = getSpellCost(args[1]);
     		if(rh != null)
     		{
-    			player.sendMessage("The Spell " + args[1] + " Costs " + rh[1] + " of item ID " + rh[0] +
-    				" And " + rh[3] + " of item ID " + rh[2]);
+    			player.sendMessage(ChatColor.BLUE +"The Spell " + args[1] + " Costs " + rh[1] + " of " +spellfile.getString("Regeant-1-Name"));
+    			if(rh[2] != 0)
+    			{
+    				player.sendMessage(ChatColor.BLUE + "And Costs " + rh[3] + " Of " + spellfile.getString("Regeant-2-Name"));
+    			}
     		} else {
-    			player.sendMessage("You should NOT get this message :O");
+    			player.sendMessage(ChatColor.YELLOW +"You should NOT get this message :O");
     		}
     		
     	}
@@ -212,10 +240,10 @@ public class HeroMagicPlayerListener extends PlayerListener
 					learned = playerfile.getBoolean(spellname);
 					if(learned)
 					{
-						event.getPlayer().sendMessage("This is the " + spellname + " Location");
+						event.getPlayer().sendMessage(ChatColor.BLUE +"This is the " + spellname + " Location");
 						addSpell(event.getPlayer(),spellname); //just in case
 					} else {
-						event.getPlayer().sendMessage("You have learned the spell " + spellname + "!");
+						event.getPlayer().sendMessage(ChatColor.RED+"You have learned the spell " + spellname + "!");
 						addSpell(event.getPlayer(),spellname);
 						playerfile.setBoolean("Learned-"+spellname, true);
 					}
@@ -251,21 +279,21 @@ public class HeroMagicPlayerListener extends PlayerListener
     		BlockFace face = target.getFace(player.getLocation().getBlock());
     		
     		if (target == null) {
-    			player.sendMessage("Too Far To Blink");
+    			player.sendMessage(ChatColor.LIGHT_PURPLE +"Your Target Is Too Far!");
     			return false;
     		} else if (getDistance(player,target) > 20) {
-    			player.sendMessage("Too Far To Blink");
+    			player.sendMessage(ChatColor.LIGHT_PURPLE +"Your Target Is Too Far!");
     			return false;
     		} else if (60 > 0 && isOnCooldown(player,"Blink",getSpellCooldown("Blink"))) {
-    			player.sendMessage("The spell Blink is on cooldown");
+    			player.sendMessage(ChatColor.LIGHT_PURPLE + "The spell Blink is on cooldown");
     			return false;
     		}  else if (player.getWorld().getBlockTypeIdAt(target.getX(),target.getY()+1,target.getZ()) == 0 && player.getWorld().getBlockTypeIdAt(target.getX(),target.getY()+2,target.getZ()) == 0) {
     			// teleport to top of target block if possible
     			if (!removeRegents(player,getSpellCost("Blink"))) {
-        			player.sendMessage("You Do Not Have The Regeants To Cast Blink!");
+        			player.sendMessage(ChatColor.RED +"You Do Not Have The Regeants To Cast Blink!");
         			return false;
         		}
-    			player.sendMessage("You Cast Blink!");
+    			player.sendMessage(ChatColor.BLUE + "You Cast Blink!");
     		//	sendMessageToPlayersInRange(player,STR_CAST_OTHERS.replace("[caster]",player.getName()));
     			player.teleport(new Location(player.getWorld(), target.getX()+.5, (double)target.getY()+1, target.getZ()+.5 ,player.getEyeLocation().getYaw(), player.getEyeLocation().getPitch()  ));
     			//if (COOLDOWN > 0) {
@@ -275,10 +303,10 @@ public class HeroMagicPlayerListener extends PlayerListener
     		} else if (target.getTypeId() == 0 && player.getWorld().getBlockTypeIdAt(face.getModX(),face.getModY()+1,face.getModZ()) == 0) {
     			// otherwise teleport to face of target block
     			if (!removeRegents(player,getSpellCost("Blink"))) {
-        			player.sendMessage("You Do Not Have The Regeants To Cast Blink!");
+        			player.sendMessage(ChatColor.RED +"You Do Not Have The Regeants To Cast Blink!");
         			return false;
         		}
-    			player.sendMessage("You cast blink");
+    			player.sendMessage(ChatColor.BLUE +"You cast blink");
     			//sendMessageToPlayersInRange(player,STR_CAST_OTHERS.replace("[caster]",player.getName()));
     			player.teleport(new Location(player.getWorld(),face.getModX()+.5,(double)face.getModY(),face.getModZ()+.5,player.getEyeLocation().getYaw(), player.getEyeLocation().getPitch()));
     			//if (COOLDOWN > 0) {
@@ -287,7 +315,7 @@ public class HeroMagicPlayerListener extends PlayerListener
     			return true;
     		} else {
     			// no place to stand
-    			player.sendMessage("There Is No Place To Stand At That Location!");
+    			player.sendMessage(ChatColor.LIGHT_PURPLE + "There Is No Place To Stand At That Location!");
     			return false;
     		}
 	
@@ -373,6 +401,23 @@ public class HeroMagicPlayerListener extends PlayerListener
     public boolean canCastSpell(Player player, String spellname)
     {
     	Property playerfile = new Property(player.getName(), plugin);
+    	Property spellfile = new Property(spellname, plugin);
+    	if(! spellfile.keyExists("BlackListedRealms"))
+    	{
+    		spellfile.setString("BlackListedRealms", "PutBlackListHere");
+    		spellfile.save();
+    	}
+    	String Blacklist = spellfile.getString("BlackListedRealms");
+    	//player.sendMessage(Blacklist);
+    	//player.sendMessage(player.getWorld().getName() + "    " + Blacklist);
+    	if(Blacklist.contains(player.getWorld().getName()))
+    	{
+    		//player.sendMessage("This spell cannot be used in this world");
+    		
+    		return false;
+    	} 
+    	
+    	
     	return (playerfile.getBoolean(spellname) || player.isOp());
     	
     }    

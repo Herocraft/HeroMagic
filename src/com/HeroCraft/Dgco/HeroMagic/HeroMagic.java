@@ -22,7 +22,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class HeroMagic extends JavaPlugin {
     private final HeroMagicPlayerListener playerListener = new HeroMagicPlayerListener(this);
-	//private final BukkitSpellsBlockListener blockListener = new BukkitSpellsBlockListener(this);
+	private final HeroMagicBlockListener blockListener = new HeroMagicBlockListener(this);
     private final HashMap<Player, Boolean> debugees = new HashMap<Player, Boolean>();
     
     public String pName = "HeroMagic";
@@ -61,6 +61,7 @@ public class HeroMagic extends JavaPlugin {
 		//getServer().getPluginManager().registerEvent(Event.Type.BLOCK_PLACE, blockListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.PLAYER_ANIMATION, playerListener, Priority.Normal, this);
 	    pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Priority.Normal, this);
+	    pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Priority.Normal, this);
 	    
 		// EXAMPLE: Custom code, here we just output some info so we can check all is well
 		PluginDescriptionFile pdfFile = this.getDescription();

@@ -34,7 +34,7 @@ public final class Property {
 			dir.mkdirs();
 		}
 		
-		this.filename = plugin.getDataFolder().getAbsolutePath() + filename;
+		this.filename = plugin.getDataFolder().getAbsolutePath() + File.separator + filename;
 			//"HeroSpellsData/"
 		
 		//System.out.println(this.filename);
