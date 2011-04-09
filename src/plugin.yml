@@ -1,9 +1,13 @@
 name: HeroMagic
-main: com.bukkit.Dgco.HeroMagic.HeroMagic
-version: 0.0.1.0
-author: Dgco
-description: Casts Stuff
+main: com.HeroCraft.Dgco.HeroMagic.HeroMagic
+version: 0.9
+author: Dgco, Sp1rit
+database: true
+description: >
+             Casts Stuff
 commands:
-   cast:
-      description: Casts a inventory clearing spell.
-      usage: |
+  cast:
+    description: Casts a spell.
+    usage: |
+           /<command> <spell> [params]
+           Example: /<command>
