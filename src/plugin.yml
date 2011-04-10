@@ -1,5 +1,5 @@
 name: HeroMagic
-main: com.HeroCraft.Dgco.HeroMagic.HeroMagic
+main: com.herocraftonline.heromagic.HeroMagic
 version: 0.9
 author: Dgco, Sp1rit
 database: true

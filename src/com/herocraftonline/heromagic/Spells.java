@@ -47,8 +47,6 @@ public class Spells {
 			spell.setReagent1_name(reagent1_name);
 			spell.setReagent2_name(reagent2_name);
 		}
-
-		this.blackList = this.config.getStringList("BlackList", this.blackList);
 		save();
 	}
 	
