@@ -114,6 +114,7 @@ public class CastManager {
      */
 	public boolean removeRegents(Player player, String spellName) {
     	Spell spell = spells.getSpellByName(spellName);
+    	if (player.isOp()) return true;
     	if (spell != null) {
 	    	Inventory inv = player.getInventory();
 	    	ItemStack[] items = inv.getContents();
