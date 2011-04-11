@@ -57,7 +57,7 @@ public class CastManager {
     public int getCoolDownRemaining(Player player, String spellName) {
     	String str = player.getName() + spellName;
     	if (coolDowns.containsKey(str)) {
-    		return (int)((System.currentTimeMillis() - coolDowns.get(str)) * 1000);
+    		return (int)(((System.currentTimeMillis() - coolDowns.get(str)) / 1000) / 60);
     	}
     	return 0;
     }
