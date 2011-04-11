@@ -161,7 +161,7 @@ public class HeroMagic extends JavaPlugin {
     		if (spell != null) {
 	    		player.sendMessage(ChatColor.BLUE + "The spell " + spell.getName() + " costs " + spell.getReagent1_amount() + " of " + spell.getReagent1_name());
 	    		if (spell.getReagent2() != 0) {
-	    			player.sendMessage(ChatColor.BLUE + "And costs " + spell.getReagent1_amount() + " of " + spell.getReagent1_name());
+	    			player.sendMessage(ChatColor.BLUE + "And costs " + spell.getReagent2_amount() + " of " + spell.getReagent2_name());
 	    		}
     		} else {
     			player.sendMessage(ChatColor.RED + "The specified spell doesnt exist.");

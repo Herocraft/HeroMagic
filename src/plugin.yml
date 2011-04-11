@@ -1,6 +1,6 @@
 name: HeroMagic
 main: com.herocraftonline.heromagic.HeroMagic
-version: 0.9
+version: 0.9.1
 author: Dgco, Sp1rit
 database: true
 description: >
