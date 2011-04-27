@@ -15,6 +15,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -76,6 +78,14 @@ public class HeroMagic extends JavaPlugin {
 					{
 						return castGate(player, args);
 		 			}
+					else if (args[0].equalsIgnoreCase("heal"))
+					{
+						return castHeal(player);
+					}
+					else if (args[0].equalsIgnoreCase("food"))
+					{
+						return castSummonFood(player);
+					}
 				}
 				
 				sender.sendMessage(ChatColor.LIGHT_PURPLE + "Your magical words have no effect. Perhaps you need to pronounce them better...");
@@ -85,6 +95,8 @@ public class HeroMagic extends JavaPlugin {
 		return false;
     }
 	
+
+
 	private void setupDatabase() {
 		try {
 			getDatabase().find(PlayerMark.class).findRowCount();
@@ -161,7 +173,7 @@ public class HeroMagic extends JavaPlugin {
     		if (spell != null) {
 	    		player.sendMessage(ChatColor.BLUE + "The spell " + spell.getName() + " costs " + spell.getReagent1_amount() + " of " + spell.getReagent1_name());
 	    		if (spell.getReagent2() != 0) {
-	    			player.sendMessage(ChatColor.BLUE + "And costs " + spell.getReagent2_amount() + " of " + spell.getReagent2_name());
+	    			player.sendMessage(ChatColor.BLUE + "and costs " + spell.getReagent1_amount() + " of " + spell.getReagent1_name());
 	    		}
     		} else {
     			player.sendMessage(ChatColor.RED + "The specified spell doesnt exist.");
@@ -202,7 +214,67 @@ public class HeroMagic extends JavaPlugin {
     	}
     	return true;
     }
-    
+    public boolean castHeal(Player player) {
+    	if(castManager.canCastSpell(player,"Heal")) {
+    		if (!castManager.isOnCooldown(player,"Heal")) {
+    			if (castManager.removeRegents(player, "Heal")) {
+	    			
+    				player.setHealth(player.getHealth()+2);
+    				
+	    			castManager.startCooldown(player,"Heal");
+	    			player.sendMessage(ChatColor.BLUE + "You heal some of your minor wounds...");
+	    		} else {
+	    			player.sendMessage(ChatColor.RED + "You do not have the reagants to cast Heal");
+	    		}
+    		} else {
+    			player.sendMessage(ChatColor.LIGHT_PURPLE + "This spell Heal is on cooldown for  " + castManager.getCoolDownRemaining(player, "Heal") + " more minutes");
+    		}
+    	} else {
+    		player.sendMessage(ChatColor.RED + "You need to learn this spell first.");
+    	}
+    	return true;
+    }
+    public boolean castSummonFood(Player player)
+    {
+    	if(castManager.canCastSpell(player,"Food")) {
+    		if (!castManager.isOnCooldown(player,"Food")) {
+    			if (castManager.removeRegents(player, "Food")) {
+	    			
+    				PlayerInventory inv = player.getInventory();
+    				if(inv.contains(357))
+    				{
+    					ItemStack[] itm = inv.getContents();
+    					
+    					ItemStack newitms = new ItemStack(357,itm[inv.first(357)].getAmount()+8);
+    					
+    					inv.remove(itm[inv.first(357)]);
+    					inv.addItem(newitms);
+    					
+    				}/* else if(inv.contains(281))
+    				{
+    					ItemStack itm= new ItemStack(281,1);
+    					inv.remove(itm);
+    					inv.addItem(new ItemStack(282));
+    				}*/ else {
+    					inv.addItem(new ItemStack(357,8));
+    				}
+    				
+    				
+    				castManager.startCooldown(player,"Food");
+    				
+    				
+	    			player.sendMessage(ChatColor.BLUE + "You magically Summon food into existance");
+	    		} else {
+	    			player.sendMessage(ChatColor.RED + "You do not have the reagants to cast Summon Food");
+	    		}
+    		} else {
+    			player.sendMessage(ChatColor.LIGHT_PURPLE + "This spell Summon Food is on cooldown for " + castManager.getCoolDownRemaining(player, "Food") + " more minutes");
+    		}
+    	} else {
+    		player.sendMessage(ChatColor.RED + "You need to learn this spell first.");
+    	}
+    	return true;
+    }
 	public boolean castBlink(Player player) {
     	if(castManager.canCastSpell(player,"Blink")) {
     		Block target = player.getTargetBlock(null, 20);
@@ -222,7 +294,7 @@ public class HeroMagic extends JavaPlugin {
 			    			castManager.startCooldown(player,"Blink");
 			    			return true;
 			    		} else {
-			    			player.sendMessage(ChatColor.LIGHT_PURPLE + "There ss no place to stand at that location!");
+			    			player.sendMessage(ChatColor.LIGHT_PURPLE + "There is no place to stand at that location!");
 			    		}
 	    			} else {
 	    				player.sendMessage(ChatColor.RED + "You do not have the reagants to cast Blink!");

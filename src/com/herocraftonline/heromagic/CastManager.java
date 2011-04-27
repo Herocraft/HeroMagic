@@ -54,10 +54,13 @@ public class CastManager {
 		}
 	}
     
-    public int getCoolDownRemaining(Player player, String spellName) {
+    public double getCoolDownRemaining(Player player, String spellName) {
     	String str = player.getName() + spellName;
     	if (coolDowns.containsKey(str)) {
-    		return (int)(((System.currentTimeMillis() - coolDowns.get(str)) / 1000) / 60);
+    		double hold =((double)(spells.getSpellByName(spellName).getCoolDown() - ((System.currentTimeMillis() - coolDowns.get(str)) / 1000))) / 60.0 ;
+    		hold *=1000.0;
+    		int conv = (int) hold;
+    		return (double)(conv/1000.0);
     	}
     	return 0;
     }
@@ -98,7 +101,7 @@ public class CastManager {
      * @return
      */
     public boolean canCastSpell(Player player, String spellName) {
-    	if(spells.blackList.contains(player.getWorld().getName())) {
+    	if(spells.blackList.contains(player.getWorld().getName()) || player == null || spellName == null) {
     		return false;
     	}
     	PlayerSpell playerSpell = plugin.getDatabase().find(PlayerSpell.class).where().ieq("player", player.getName()).ieq("spell", spellName).findUnique();
@@ -114,7 +117,7 @@ public class CastManager {
      */
 	public boolean removeRegents(Player player, String spellName) {
     	Spell spell = spells.getSpellByName(spellName);
-    	if (player.isOp()) return true;
+    	if(player.isOp()) return true;
     	if (spell != null) {
 	    	Inventory inv = player.getInventory();
 	    	ItemStack[] items = inv.getContents();
