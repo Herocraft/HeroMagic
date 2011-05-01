@@ -27,6 +27,7 @@ public class Spells {
 		spellList.add(new Spell("Mark"));
 		spellList.add(new Spell("Heal"));
 		spellList.add(new Spell("Food"));
+		spellList.add(new Spell("GlassNova"));
 		
 		for(Spell spell : spellList) {
 			int coolDown = this.config.getInt("Spells." + spell.getName() + ".CoolDown", 60);

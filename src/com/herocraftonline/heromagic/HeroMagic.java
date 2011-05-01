@@ -1,6 +1,7 @@
 package com.herocraftonline.heromagic;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -8,10 +9,13 @@ import javax.persistence.PersistenceException;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
@@ -20,20 +24,29 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+
+
 public class HeroMagic extends JavaPlugin {
 	private static final Logger logger = Logger.getLogger("Minecraft.HeroMagic");
 	public CastManager castManager;
 	public Spells spells;
+	public HashMap< Entity, ArrayList<Block> > novaBlockList;
+	public HashMap< Entity, ArrayList<Integer> > novaBlockId;
     
 	@Override
     public void onEnable() {
     	HeroMagicPlayerListener playerListener = new HeroMagicPlayerListener(this);
+    	HeroMagicBlockListener blockListener = new HeroMagicBlockListener(this);
     	
 		PluginManager pm = getServer().getPluginManager();
 	    pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Priority.Normal, this);
+	    pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Priority.Low, this);
 	    
 	    spells = new Spells(this);
 	    castManager = new CastManager(this);
+	    
+	    novaBlockList = new HashMap<Entity, ArrayList<Block>>();
+	    novaBlockId = new HashMap<Entity, ArrayList<Integer>>();
 	    
 	    setupDatabase();
 	    
@@ -85,6 +98,10 @@ public class HeroMagic extends JavaPlugin {
 					else if (args[0].equalsIgnoreCase("food"))
 					{
 						return castSummonFood(player);
+					}
+					else if (args[0].equalsIgnoreCase("glassnova"))
+					{
+						return castGlassNova(player);
 					}
 				}
 				
@@ -329,6 +346,134 @@ public class HeroMagic extends JavaPlugin {
 			player.sendMessage(ChatColor.RED + "You need to learn this spell first.");
 		}
 		return true;
+	}
+	
+	public boolean castGlassNova(Player player)
+	{
+		if(castManager.canCastSpell(player, "GlassNova"))
+		{
+			if(player.isOp() || castManager.isOnCooldown(player, "GlassNova"))
+			{
+				if(castManager.removeRegents(player, "GlassNova"))
+				{
+					List<Entity> entities = player.getNearbyEntities(20.0, 20.0, 20.0);
+					for(Entity ent : entities)
+					{
+						//if(ent instanceof CraftPlayer)
+							if(player.getEntityId() != ent.getEntityId())
+							{
+								if(novaBlockId.containsKey(ent) || novaBlockList.containsKey(ent))
+								{
+									player.sendMessage(ChatColor.RED +"You already have an active Nova!");
+									return true;
+								}
+								World world =  ent.getWorld();
+								int x = (int) ent.getLocation().getX();
+								int y = (int) ent.getLocation().getY();
+								int z = (int) ent.getLocation().getZ();
+								
+								Location loc = new Location( world, x+.5, y, z+.5, ent.getLocation().getYaw(),ent.getLocation().getPitch());
+								
+								ArrayList<Block> glassBlocks = new ArrayList<Block>();
+								ArrayList<Integer> BlockIds = new ArrayList<Integer>();
+								
+								ent.teleport(loc);
+								
+								Location blockloc = new Location(world,x,y,z-1);
+								if(blockloc.getBlock().getTypeId() != -1)
+								{
+									glassBlocks.add(blockloc.getBlock());
+									BlockIds.add(blockloc.getBlock().getTypeId());
+									blockloc.getBlock().setTypeId(20);
+								}
+								
+								blockloc = new Location(world,x,y,z+1);
+								if(blockloc.getBlock().getTypeId() != -1)
+								{
+									glassBlocks.add(blockloc.getBlock());
+									BlockIds.add(blockloc.getBlock().getTypeId());
+									blockloc.getBlock().setTypeId(20);
+								}
+								
+								blockloc = new Location(world,x-1,y,z);
+								if(blockloc.getBlock().getTypeId() != -1)
+								{
+									glassBlocks.add(blockloc.getBlock());
+									BlockIds.add(blockloc.getBlock().getTypeId());
+									blockloc.getBlock().setTypeId(20);
+								}
+								
+								blockloc = new Location(world,x+1,y,z);
+								if(blockloc.getBlock().getTypeId() != -1)
+								{
+									glassBlocks.add(blockloc.getBlock());
+									BlockIds.add(blockloc.getBlock().getTypeId());
+									blockloc.getBlock().setTypeId(20);
+								}
+								
+								blockloc = new Location(world,x,y+1,z-1);
+								if(blockloc.getBlock().getTypeId() != -1)
+								{
+									glassBlocks.add(blockloc.getBlock());
+									BlockIds.add(blockloc.getBlock().getTypeId());
+									blockloc.getBlock().setTypeId(20);
+								}
+								blockloc = new Location(world,x,y+1,z+1);
+								if(blockloc.getBlock().getTypeId() != -1)
+								{
+									glassBlocks.add(blockloc.getBlock());
+									BlockIds.add(blockloc.getBlock().getTypeId());
+									blockloc.getBlock().setTypeId(20);
+								}
+								blockloc = new Location(world,x-1,y+1,z);
+								if(blockloc.getBlock().getTypeId() != -1)
+								{
+									glassBlocks.add(blockloc.getBlock());
+									BlockIds.add(blockloc.getBlock().getTypeId());
+									blockloc.getBlock().setTypeId(20);
+								}
+								blockloc = new Location(world,x+1,y+1,z);
+								if(blockloc.getBlock().getTypeId() != -1)
+								{
+									glassBlocks.add(blockloc.getBlock());
+									BlockIds.add(blockloc.getBlock().getTypeId());
+									blockloc.getBlock().setTypeId(20);
+								}
+								novaBlockList.put(ent, glassBlocks);
+								novaBlockId.put(ent, BlockIds);
+								this.getServer().getScheduler().scheduleSyncDelayedTask(this,new PluginRunner(this,ent), 300L);
+								
+								
+							}
+					
+					}
+					player.sendMessage(ChatColor.BLUE + "You focus your magical powers to encase all nearby living things in Glass!");
+				}else {
+						player.sendMessage(ChatColor.RED +"You do not have the reagants to cast Glass Nova!");
+					}
+			} else {
+				player.sendMessage(ChatColor.LIGHT_PURPLE + "This spell Glass Nova is on cooldown for " + castManager.getCoolDownRemaining(player, "GlassNova") + " more minutes");
+			}
+		} else {
+			player.sendMessage(ChatColor.RED + "You need to learn this spell first.");
+		}
+		return true;
+	}
+
+	public void removeGlassNovaBlocks(Entity ent)
+	{
+		try{
+			ArrayList<Block> rblocks = novaBlockList.remove(ent);
+			ArrayList<Integer> iblocks = novaBlockId.remove(ent);
+			for(int i =0; i < rblocks.size();i++)
+			{
+				rblocks.get(i).setTypeId(iblocks.get(i));
+			}
+		} catch(Exception e)
+		{
+			
+		}
+		return;	
 	}
 	
 	private boolean castMark(Player player) {

@@ -41,6 +41,8 @@ public class CastManager {
      * @return
      */
     public boolean isOnCooldown(Player player, String spellName) {
+    	if(player.isOp()) return false;
+    	
     	String str = player.getName() + spellName;
     	int coolDown = spells.getSpellByName(spellName).getCoolDown();
     	
